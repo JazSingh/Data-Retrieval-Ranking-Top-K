@@ -8,5 +8,9 @@ namespace DataAnalyseP1
 {
     class Controller
     {
+        public Controller()
+        {
+            new DatabaseController();
+        }
     }
 }

@@ -10,6 +10,8 @@ namespace DataAnalyseP1
     {
         static void Main(string[] args)
         {
+            new Controller();
+            Console.ReadLine();
         }
     }
 }
