@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.30501.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PreProcessor", "DataAnalyseP1\PreProcessor.csproj", "{B9E6D4BB-41F3-4A11-A911-3DE7F5EFEA14}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PreProcessor", "PreProcessor\PreProcessor.csproj", "{B9E6D4BB-41F3-4A11-A911-3DE7F5EFEA14}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QueryProcessor", "QueryProcessor\QueryProcessor.csproj", "{00EDE8BF-555B-42E6-B0ED-C808D7CBC4BC}"
 EndProject
@@ -11,6 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		..\..\..\..\Downloads\autompg.db = ..\..\..\..\Downloads\autompg.db
 		..\..\..\..\Downloads\autompg.sql = ..\..\..\..\Downloads\autompg.sql
+		..\..\..\..\Downloads\workload.txt = ..\..\..\..\Downloads\workload.txt
 	EndProjectSection
 EndProject
 Global
