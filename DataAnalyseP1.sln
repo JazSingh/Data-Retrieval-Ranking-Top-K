@@ -7,13 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PreProcessor", "PreProcesso
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QueryProcessor", "QueryProcessor\QueryProcessor.csproj", "{00EDE8BF-555B-42E6-B0ED-C808D7CBC4BC}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4FC1A1E1-49C4-4533-A24A-6223C6DE158E}"
-	ProjectSection(SolutionItems) = preProject
-		..\..\..\..\Downloads\autompg.db = ..\..\..\..\Downloads\autompg.db
-		..\..\..\..\Downloads\autompg.sql = ..\..\..\..\Downloads\autompg.sql
-		..\..\..\..\Downloads\workload.txt = ..\..\..\..\Downloads\workload.txt
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
