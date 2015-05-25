@@ -4,12 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QueryProcessor
+namespace DataAnalyseP1
 {
     class Program
     {
         static void Main(string[] args)
         {
+            new Controller();
+            Console.ReadLine();
         }
     }
 }
