@@ -57,7 +57,7 @@ namespace PreProcessor
         }
         private void CalcQF()
         {
-            Console.WriteLine("\tCalcultings QFs...");
+            Console.WriteLine("\tCalculating QFs...");
             var avf = wp.ContructAttrValFreqs();
             foreach (var table in QFIDFTables)
                 RMaxQFs.Add(table.Name, wp.CalculateRMaxQF(avf, table.Name));
