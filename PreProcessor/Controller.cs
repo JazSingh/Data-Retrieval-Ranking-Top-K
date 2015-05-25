@@ -24,8 +24,6 @@ namespace DataAnalyseP1
 
             Dictionary<Tuple<string,string>, float> hqf = new Dictionary<Tuple<string, string>, float>(avf.Count);
 
-
-
             //foreach (var kvp in kak)
             //    Console.WriteLine("{0}\t{1} = {2}", kvp.Value, kvp.Key.Item1, kvp.Key.Item2);
             return hqf;
