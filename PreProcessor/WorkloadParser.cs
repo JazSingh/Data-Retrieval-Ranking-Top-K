@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 
-namespace DataAnalyseP1
+namespace PreProcessor
 {
     class WorkloadParser
     {
@@ -44,11 +44,11 @@ namespace DataAnalyseP1
             numItems = i - 2;
         }
 
-        public int CalculateRMaxQF(Dictionary<Tuple<string, string>, int> qfs)
+        public int CalculateRMaxQF(Dictionary<Tuple<string, string>, int> qfs, string col)
         {
             int max = 0;
             foreach (var kvp in qfs)
-                max = kvp.Value > max ? kvp.Value : max;
+                max = kvp.Key.Item1.Equals(col) && kvp.Value > max ? kvp.Value : max;
             return max;
         }
 

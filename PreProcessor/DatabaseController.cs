@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data.SQLite;
 
-namespace DataAnalyseP1
+namespace PreProcessor
 {
     class DatabaseController
     {

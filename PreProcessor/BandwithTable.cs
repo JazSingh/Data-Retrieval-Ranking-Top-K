@@ -6,7 +6,11 @@ using System.Threading.Tasks;
 
 namespace PreProcessor
 {
-    class BandwithTable
+    public class BandwithTable
     {
+        public BandwithTable()
+        {
+
+        }
     }
 }

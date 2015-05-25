@@ -12,11 +12,24 @@ namespace PreProcessor
         float QF;
         float IDF;
         float QFIDF;
+        float importance;
+
+        public Attribute(string name)
+        {
+            this.name = name;
+        }
 
         public void SetQF(int RQF, int RMaxQF)
         {
             QF = ((float)RQF + 1) 
-               / ((float)RmaxQF + 1);
+               / ((float)RMaxQF + 1);
+
+            SetImportance();
+        }
+
+        private void SetImportance()
+        {
+            importance = (float) Math.Log10(QF);
         }
 
         public abstract void SetIDF(/*nog bepalen*/);
@@ -24,11 +37,29 @@ namespace PreProcessor
 
     public class CatAttribute : Attribute
     {
+        public CatAttribute(string name) 
+            : base(name)
+        {
+            //mag dit leeg blijven?
+        }
 
+        public override void SetIDF()
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public class NumAttribute : Attribute
     {
+        public NumAttribute(string name)
+            : base(name)
+        { 
+            //mag leeg blijven? :p
+        }
 
+        public override void SetIDF()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -6,19 +6,52 @@ using System.Threading.Tasks;
 
 namespace PreProcessor
 {
-    abstract class QFIDFTable
+    public abstract class QFIDFTable
     {
-        Dictionary<string, Attribute> table;
+        public readonly string Name;
+
+        public QFIDFTable(string n)
+        {
+            Name = n;
+        }
+
+        protected Dictionary<string, Attribute> table;
+        public abstract void Initialize(List<string> vals);
+
+        public void SetQF(Dictionary<Tuple<string, string>, int> rqfs, Dictionary<string, int> rmaxqfs)
+        {
+            int max = rmaxqfs[Name];
+            foreach (var kvp in table)
+            {
+                int k = 0;
+                rqfs.TryGetValue(new Tuple<string, string>(Name, kvp.Key), out k);
+                table[kvp.Key].SetQF(k, max);
+            }
+        }
 
     }
 
-    class QFIDFCatTable
+    public class QFIDFCatTable : QFIDFTable
     {
+        public QFIDFCatTable(string n) : base(n) { }
+
+        public override void Initialize(List<string> vals)
+        {
+            table = new Dictionary<string, Attribute>(vals.Count);
+            foreach (string val in vals)
+                table.Add(val, new CatAttribute(val));
+        }
 
     }
 
-    class QFIDFNumTable
+    public class QFIDFNumTable : QFIDFTable
     {
-
+        public QFIDFNumTable(string n) : base(n) { }
+        public override void Initialize(List<string> vals)
+        {
+            table = new Dictionary<string, Attribute>(vals.Count);
+            foreach (string val in vals)
+                table.Add(val, new NumAttribute(val));
+        }
     }
 }
