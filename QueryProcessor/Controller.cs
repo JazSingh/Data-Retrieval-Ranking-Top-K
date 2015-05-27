@@ -46,38 +46,77 @@ namespace DataAnalyseP1
 
         public Tuple<Dictionary<string, List<string>>, int> ParseQuery(string query)
         {
+            // pre-parse operations
+            // remove whitespaces and "
+            query = query.Replace(" ", String.Empty);
+            query = query.Replace("\"", String.Empty);
+            query = query.Replace("\'", String.Empty);
+
             // the result query and k value
             Dictionary<string, List<string>> q = new Dictionary<string, List<string>>();
             int k = -1;
+            int i = 0;
 
-            // split query attributes
-            string[] attributes = query.Split(',');
-            int n = attributes.Length;
-
-            // derive the query attributes and the k value
-            for(int i = 0; i < n; i++)
+            while (i < query.Length)
             {
-                string a = attributes[i];
+                string attr = "";
+                List<string> values = new List<string>();
+                
+                // read attribute
+                while (query[i] != '=' && (query[i] != 'I' && query[i + 1] != 'N'))
+                {
+                    attr += query[i];
+                    i++;
+                }
+                if (query[i] == '=')
+                {
+                    // read value
+                    string val = "";
+                    i++;
+                    while (query[i] != ',' && query[i] != ';')
+                    {
+                        val += query[i];
+                        i++;
+                    }
+                    values.Add(val);
+                }
+                else if (query[i] == 'I' && query[i + 1] == 'N')
+                {
+                    while (query[i] != '(')
+                        i++;
+                    // read value's
+                    i++; // skip '('
+                    while (query[i] != ',' && query[i] != ';')
+                    {
+                        string val = "";
+                        while (query[i] != ',' && query[i] != ')')
+                        {
+                            val += query[i];
+                            i++;
+                        }
+                        values.Add(val);
+                        i++;
+                    }
+                }
 
-                // remove whitespaces and "
-                a = a.Replace(" ", String.Empty);
-                a = a.Replace("\"", String.Empty);
-
-                // split attribute
-                string[] comps = a.Split('=');
-
-                // filter k
-                if (comps[0][0] == 'k')
-                    k = Convert.ToInt32(comps[1]);
-
-                // add attribute and value to query
+                // top-k value
+                if (attr == "k")
+                    k = Convert.ToInt32(values[0]);
                 else
                 {
-                    if (!q.ContainsKey(comps[0]))
-                        q.Add(comps[0], new List<string> { comps[1] });
+                    // store attribute and value
+                    if (!q.ContainsKey(attr))                    
+                        q.Add(attr, values);
+                    
                     else
-                        q[comps[0]].Add(comps[1]);
-                }                    
+                        foreach (string str in values)
+                            q[attr].Add(str);
+                }
+
+                // move till end or next attr and value
+                while (i < query.Length && query[i] != ',' && query[i] != ';')
+                    i++;
+                i++;
             }
 
             // if no k value was found; use the defealt value (10)

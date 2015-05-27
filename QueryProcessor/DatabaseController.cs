@@ -10,7 +10,7 @@ namespace DataAnalyseP1
     class DatabaseController
     {
         SQLiteConnection m_dbConnection;
-        Dictionary<string, Dictionary<string, Tuple<float, float>>> metadb;
+        Dictionary<string, Dictionary<string, float[]>> metadb;
         public DatabaseController()
         {
             // setup database connection
@@ -32,7 +32,7 @@ namespace DataAnalyseP1
             SQLiteDataReader reader = command.ExecuteReader();
             Dictionary<string, Tuple<float, float>> type = new Dictionary<string, Tuple<float, float>>();
             while (reader.Read())            
-                type.Add((string)reader[0], new Tuple<float, float>((float)reader[1], (float)reader[2]));
+                type.Add((string)reader[0], new int[2]{(float)reader[1], (float)reader[2]});
             metadb.Add("type", type);
 
             // ...
@@ -83,24 +83,23 @@ namespace DataAnalyseP1
 
                 // categorical
                 else if (categorical.Contains(attr))
-                    foreach (string value in attribute.Value)
+                {
+                    // load attr colum from db
+                    SQLiteCommand command = new SQLiteCommand("SELECT id, " + attr + " FROM autompg;", m_dbConnection);
+                    SQLiteDataReader reader = command.ExecuteReader();
+                    while (reader.Read())
                     {
-                        // load attr colum from db
-                        SQLiteCommand command = new SQLiteCommand("SELECT id, " + attr + " FROM autompg;", m_dbConnection);
-                        SQLiteDataReader reader = command.ExecuteReader();
-                        while (reader.Read())
-                        {
-                            int key = Convert.ToInt32(reader[0]);
-                            string b = (string)reader[1];
+                        int key = Convert.ToInt32(reader[0]);
+                        string b = (string)reader[1];
 
-                            float s = 0;
-                            foreach (string a in attribute.Value)
-                                s = Math.Max(s, cat_sim(attr, a, b));                          
+                        float s = 0;
+                        foreach (string a in attribute.Value)
+                            s = Math.Max(s, cat_sim(attr, a, b));
 
-                            similarity_table.Add(key, s);
-                            //Console.WriteLine("id: " + reader[0] + "\t " + attr + ": " + reader[1]);
-                        }
+                        similarity_table.Add(key, s);
+                        //Console.WriteLine("id: " + reader[0] + "\t " + attr + ": " + reader[1]);
                     }
+                }
 
                 // add dict to table list (random access)
                 similarity_tables[i] = (similarity_table);
@@ -265,7 +264,7 @@ namespace DataAnalyseP1
         {
             //float h = metadb["bandwidth"][attr];
             //qfidf(b)
-            //float b_weight = metadb["attr"][b].Item2
+            //float b_weight = metadb["attr"][b][0]
 
             // return Math.Pow(Math.E, 0.5 * ((a - b) / h) * ((a - b) / h)) * b_weight
             return 1;
@@ -276,9 +275,9 @@ namespace DataAnalyseP1
         {
             /*
             if (a == b)
-                return metadb[attr][b].Item1;
+                return metadb[attr][b][0]
             else
-                return metadb["overlap"][a]
+                return metadb["overlap"][a][0]
             */
             return 1;
         }
