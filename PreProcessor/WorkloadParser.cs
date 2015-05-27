@@ -98,5 +98,7 @@ namespace PreProcessor
             return av;
         }
 
+        public Dictionary<Tuple<string, string>, int> GetItemSet(int k, int treshold) { return null; }
+
     }
 }

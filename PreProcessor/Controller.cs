@@ -66,6 +66,15 @@ namespace PreProcessor
             Console.WriteLine("\tFinished Calculating QFs!");
         }
 
+        private void CalcJaccard()
+        {
+            //niks gevonden = stop
+            //Ck verz candidaten van grootte k
+            //Lk verzamelingen echte freq itemsets van grootte k
+            //C1 --> singletons
+            //C2 --> Pairs
+        }
+
         public void InitializeTables()
         {
             Console.WriteLine("Initializing table classes....");

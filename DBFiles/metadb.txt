@@ -1,0 +1,91 @@
+CREATE TABLE Type
+(
+attr varchar(255) PRIMARY KEY,
+qfidf real,
+importance real
+);
+
+CREATE TABLE Brand
+(
+attr varchar(255) PRIMARY KEY,
+qfidf real,
+importance real
+);
+
+CREATE TABLE Model
+(
+attr varchar(255) PRIMARY KEY,
+qfidf real,
+importance real
+);
+
+CREATE TABLE Mpg
+(
+attr real PRIMARY KEY,
+qfidf real,
+importance real
+);
+
+CREATE TABLE Cylinders
+(
+attr real PRIMARY KEY,
+qfidf real,
+importance real
+);
+
+CREATE TABLE Displacement
+(
+attr real PRIMARY KEY,
+qfidf real,
+importance real
+);
+
+CREATE TABLE Horsepower
+(
+attr real PRIMARY KEY,
+qfidf real,
+importance real
+);
+
+CREATE TABLE Weight
+(
+attr real PRIMARY KEY,
+qfidf real,
+importance real
+);
+
+CREATE TABLE Acceleration
+(
+attr real PRIMARY KEY,
+qfidf real,
+importance real
+);
+
+CREATE TABLE ModelYear
+(
+attr real PRIMARY KEY,
+qfidf real,
+importance real
+);
+
+CREATE TABLE Origin
+(
+attr real PRIMARY KEY,
+qfidf real,
+importance real
+);
+
+CREATE TABLE AttributeOverlap
+(
+col varchar(255),
+attr1 varchar(255),
+attr2 varchar(255),
+similarity real,
+PRIMARY KEY (attr1, attr2)
+);
+
+CREATE TABLE Bandwith
+(
+attr varchar(255) PRIMARY KEY,
+bandwith real
+);
