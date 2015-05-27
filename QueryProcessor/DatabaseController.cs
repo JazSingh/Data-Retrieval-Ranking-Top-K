@@ -128,9 +128,8 @@ namespace DataAnalyseP1
                 seenattributes.Add(attr);
                 i++;
             }
-            
-            // ...
 
+            /*
             // obtain importance values for missing attributes
             List<string> missingattributes = new List<string>();
             foreach (string elem in numerical)            
@@ -138,11 +137,13 @@ namespace DataAnalyseP1
                     missingattributes.Add(elem);
             foreach (string elem in categorical)
                 if (!(seenattributes.Contains(elem)))
-                    missingattributes.Add(elem);            
+                    missingattributes.Add(elem);
+            Dictionary<int, float>[] importance_tabel = new Dictionary<int, float>[missingattributes.Count];
             // ...
+            */
 
             // get the Top-K ID's
-            List<Tuple<int, float>> topk = TopKSelection(k);
+            List<Tuple<int, float>> topk = TopKSelection(k, indexes, similarity_tables);
 
             // get the Top-K tuples
             i = 0;
@@ -165,51 +166,25 @@ namespace DataAnalyseP1
             return ouput;
         }
 
-        public List<Tuple<int, float>> TopKSelection(int k) // , int[][] indexes, Dictionary<int, float>[] sim_tabel, Dictionary<int, float>[] imp_tabel)
+        public List<Tuple<int, float>> TopKSelection(int k , int[][] indexes, Dictionary<int, float>[] sim_tabel)
         {
-            // Top-K selection using Fagin's Algorithm
-            int m = 3;
-            // retrieve attribute columns: <id, similarity value>, and an index array sorted by similarity value
-            // ...
-            // def indexes
-            int[][] indexes = new int[m][];
-            indexes[0] = new int[] { 3, 2, 4, 1, 5 };
-            indexes[1] = new int[] { 2, 1, 4, 3, 5 };
-            indexes[2] = new int[] { 1, 2, 3, 5, 4 };
-
-            // def dict
-            Dictionary<int, float>[] tabel = new Dictionary<int, float>[m];
-            tabel[0] = new Dictionary<int, float>();
-            tabel[0].Add(3, 0.8f);
-            tabel[0].Add(2, 0.7f);
-            tabel[0].Add(4, 0.5f);
-            tabel[0].Add(1, 0.4f);
-            tabel[0].Add(5, 0.2f);
-            tabel[1] = new Dictionary<int, float>();
-            tabel[1].Add(2, 0.9f);
-            tabel[1].Add(1, 0.85f);
-            tabel[1].Add(4, 0.5f);
-            tabel[1].Add(3, 0.4f);
-            tabel[1].Add(5, 0.3f);
-            tabel[2] = new Dictionary<int, float>();
-            tabel[2].Add(1, 0.95f);
-            tabel[2].Add(2, 0.9f);
-            tabel[2].Add(3, 0.8f);
-            tabel[2].Add(5, 0.2f);
-            tabel[2].Add(4, 0.1f);
-
-            // ...
+            // --- Top-K selection using Fagin's Algorithm ---
+            // m = number of attribute tables
+            int m = sim_tabel.Length;
+            
             // n = number of id's / tupels
-            int n = 5;
+            int n = sim_tabel[0].Count;
 
             // number of id's seen in every attribute list (m)
             int s = 0;
+            
             // tabel to keep track of seen attributes
             Dictionary<int, int> seen = new Dictionary<int, int>();
+            
             // tabel to keep the found similarity results
             Dictionary<int, float[]> found = new Dictionary<int, float[]>();
 
-            // Fagin
+            // Fagin's alogrithm
             // for row
             for (int i = 0; i < n && s < k; i++)     
                 // for column
@@ -217,7 +192,7 @@ namespace DataAnalyseP1
                 {
                     // obtain key and value
                     int key = indexes[j][i];
-                    float value = tabel[j][key];
+                    float value = sim_tabel[j][key];
 
                     // store key and value
                     float[] vs;
@@ -250,7 +225,7 @@ namespace DataAnalyseP1
                 {
                     float x = entry.Value[i];
                     if (x == 0.0f)
-                        x = tabel[i][entry.Key];
+                        x = sim_tabel[i][entry.Key];
                     score += x;
                 }
               
@@ -268,7 +243,7 @@ namespace DataAnalyseP1
                     else if (score == topk[i].Item2)
                     {
                         // break tie
-                        // calculate missing attribute score
+                        // using missing attribute score
                         // ...
                     }
                 }
@@ -288,12 +263,23 @@ namespace DataAnalyseP1
         // Numerical Similarity
         public float num_sim(string attr, int a, int b)
         {
+            //float h = metadb["bandwidth"][attr];
+            //qfidf(b)
+            //float b_weight = metadb["attr"][b].Item2
+
+            // return Math.Pow(Math.E, 0.5 * ((a - b) / h) * ((a - b) / h)) * b_weight
             return 1;
         }
 
         // Categorical Similarity
         public float cat_sim(string attr, string a, string b)
         {
+            /*
+            if (a == b)
+                return metadb[attr][b].Item1;
+            else
+                return metadb["overlap"][a]
+            */
             return 1;
         }
     }
