@@ -84,7 +84,7 @@ namespace PreProcessor
                 if (atval.Contains('='))
                 {
                     split = atval.Split('=');
-                    av.Add(new Tuple<string, string>(split[0], split[1].Replace("\'", string.Empty)));
+                    av.Add(new Tuple<string, string>(split[0].Trim(), split[1].Replace("\'", string.Empty).Trim()));
                 }
                 else
                 {
@@ -95,7 +95,7 @@ namespace PreProcessor
                         .Replace("\'", string.Empty)
                         .Split(',');
                     foreach(string val in b)
-                        av.Add(new Tuple<string, string>(split[0], val));
+                        av.Add(new Tuple<string, string>(split[0].Trim(), val.Trim()));
                 }
             }
             return av;

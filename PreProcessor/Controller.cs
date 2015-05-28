@@ -82,6 +82,8 @@ namespace PreProcessor
         {
             foreach (var kvp in pairs)
             {
+                //k = |A intersect B|
+                //|A union B| = |A| + |B| - |A intersect B|
                 float k = ((float)kvp.Value)
                     / ((float)singletons[new Tuple<string, string>(kvp.Key.Item1, kvp.Key.Item2)] + singletons[new Tuple<string, string>(kvp.Key.Item1, kvp.Key.Item3)] - kvp.Value);
                 AttributeOverlap.table.Add(kvp.Key, k);
