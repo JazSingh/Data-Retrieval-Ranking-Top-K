@@ -16,12 +16,15 @@ namespace PreProcessor
 
         int RMaxQF = 0;
 
+        List<Tuple<string, string[], int>> INClauses;
+
         public WorkloadParser()
         {
             string[] contents = GetRawContents();
             freqs = new int[contents.Length-2];
             queries = new string[contents.Length - 2];
             Extract(contents);
+            INClauses = GetINClauses();
         }
 
         //Load contents from file
@@ -98,7 +101,55 @@ namespace PreProcessor
             return av;
         }
 
-        public Dictionary<Tuple<string, string>, int> GetItemSet(int k, int treshold) { return null; }
+        public int SumFreqs()
+        {
+            int s = 0;
+            foreach (int freq in freqs)
+                s += freq;
+            return s;
+        }
 
+        private List<Tuple<string, string[], int>> GetINClauses()
+        {                 //att   vals      freq
+            var list = new List<Tuple<string, string[], int>>();
+            for (int i = 0; i < numItems; i++)
+            {
+                string query = queries[i];
+                string whereClause = query.Split(new string[] { " WHERE " }, StringSplitOptions.None)[1];
+                string[] ands = whereClause.Split(new string[] { " AND " }, StringSplitOptions.RemoveEmptyEntries);
+                foreach (string atval in ands)
+                {
+                    string[] split;
+                    //Type "IN" or "="?
+                    if (atval.Contains('='))
+                        continue;
+                    else
+                    {
+                        split = atval.Split(new string[] { " IN " }, StringSplitOptions.None);
+                        string[] b = split[1]
+                            .Replace("(", string.Empty)
+                            .Replace(")", string.Empty)
+                            .Replace("\'", string.Empty)
+                            .Split(',');
+                        list.Add(new Tuple<string, string[], int>(split[0], b, freqs[i]));
+                    }
+                }
+            }
+            return list;
+        }
+
+        public int PairsTogether(string col, string attr1, string attr2)
+        {
+            int f = 0;
+            foreach (var k in INClauses)
+            {
+                if (k.Item1 == col)
+                {
+                    if (k.Item2.Contains(attr1) && k.Item2.Contains(attr2))
+                        f += k.Item3;
+                }
+            }
+            return f;
+        }
     }
 }

@@ -6,7 +6,13 @@ using System.Threading.Tasks;
 
 namespace PreProcessor
 {
-    class OverlapTable
+    public class OverlapTable
     {
+        public Dictionary<Tuple<string, string, string>, float> table;
+
+        public OverlapTable()
+        {
+            table = new Dictionary<Tuple<string, string, string>, float>();
+        }
     }
 }
