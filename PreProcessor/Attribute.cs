@@ -21,8 +21,11 @@ namespace PreProcessor
 
         public void SetQF(int RQF, int RMaxQF)
         {
-            QF = ((float)RQF + 1) 
-               / ((float)RMaxQF + 1);
+            if (RMaxQF == 0) // er wordt nooit gezocht in de workload naar dit attribuut, QF moet laag zijn
+                QF = 1f/10000f;
+            else
+                QF = ((float)RQF + 1)
+                   / ((float)RMaxQF + 1);
 
             SetImportance();
         }
@@ -45,8 +48,6 @@ namespace PreProcessor
         {
             return QF * IDF;
         }
-
-        public abstract void SetIDF(/*nog bepalen*/);
     }
 
     public class CatAttribute : Attribute

@@ -84,7 +84,7 @@ similarity real,
 PRIMARY KEY (attr1, attr2)
 );
 
-CREATE TABLE Bandwith
+CREATE TABLE Bandwidth
 (
 attr varchar(255) PRIMARY KEY,
 bandwith real
