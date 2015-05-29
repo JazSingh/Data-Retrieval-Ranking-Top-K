@@ -50,9 +50,9 @@ namespace PreProcessor
         {
             Console.WriteLine("Calculating...");
             CalcQF();
-            //Overlap
-            //IDF
+            //Overlap            
             //Bandwith
+            //IDF (gebruikt bandwidth)
             Console.WriteLine("Finished Calculating!");
         }
         private void CalcQF()
@@ -73,6 +73,13 @@ namespace PreProcessor
             //Lk verzamelingen echte freq itemsets van grootte k
             //C1 --> singletons
             //C2 --> Pairs
+        }
+
+        private void CalcIDF()
+        {
+            Console.WriteLine("\tCalculating IDFs...");
+
+            Console.WriteLine("\tFinished Calculating IDFs!");
         }
 
         public void InitializeTables()
