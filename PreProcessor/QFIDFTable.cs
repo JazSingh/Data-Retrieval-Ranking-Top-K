@@ -15,7 +15,7 @@ namespace PreProcessor
             Name = n;
         }
 
-        protected Dictionary<string, Attribute> table;
+        public Dictionary<string, Attribute> table;
         public abstract void Initialize(List<string> vals);
 
         public void SetQF(Dictionary<Tuple<string, string>, int> rqfs, Dictionary<string, int> rmaxqfs)
@@ -28,7 +28,6 @@ namespace PreProcessor
                 table[kvp.Key].SetQF(k, max);
             }
         }
-
     }
 
     public class QFIDFCatTable : QFIDFTable

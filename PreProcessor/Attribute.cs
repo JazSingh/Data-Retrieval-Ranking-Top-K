@@ -32,7 +32,10 @@ namespace PreProcessor
             importance = (float) Math.Log10(QF);
         }
 
-        public abstract void SetIDF(/*nog bepalen*/);
+        public void SetIDF(float idf)
+        {
+            IDF = idf;
+        }
     }
 
     public class CatAttribute : Attribute
@@ -42,11 +45,6 @@ namespace PreProcessor
         {
             //mag dit leeg blijven?
         }
-
-        public override void SetIDF()
-        {
-            throw new NotImplementedException();
-        }
     }
 
     public class NumAttribute : Attribute
@@ -55,11 +53,6 @@ namespace PreProcessor
             : base(name)
         { 
             //mag leeg blijven? :p
-        }
-
-        public override void SetIDF()
-        {
-            throw new NotImplementedException();
         }
     }
 }
