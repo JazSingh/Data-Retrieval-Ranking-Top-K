@@ -8,9 +8,10 @@ namespace PreProcessor
 {
     public class BandwithTable
     {
+        public Dictionary<string, float> table;
         public BandwithTable()
         {
-
+            table = new Dictionary<string, float>();
         }
     }
 }

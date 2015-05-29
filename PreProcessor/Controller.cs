@@ -51,6 +51,7 @@ namespace PreProcessor
             Console.WriteLine("Calculating...");
             CalcQF();
             CalcJaccard();
+            CalcBandwith();
             //IDF
             //Bandwith
             Console.WriteLine("Finished Calculating!");
@@ -131,6 +132,44 @@ namespace PreProcessor
         {
             float TotalQueries = (float) wp.SumFreqs();
             return (int) Math.Ceiling(TotalQueries * 0.01);
+        }
+
+        private void CalcBandwith()
+        {
+            Console.WriteLine("\tCalculating Bandwith...");
+            List<QFIDFNumTable> numtables = new List<QFIDFNumTable>();
+            foreach (QFIDFTable t in QFIDFTables)
+                if (typeof(QFIDFNumTable) == t.GetType())
+                    numtables.Add((QFIDFNumTable) t);
+
+            foreach (QFIDFNumTable k in numtables)
+            {
+                var vals = dc.GetAllVals(k.Name);
+                float stv = CalcStdDev(vals, CalcMean(vals));
+                Bandwith.table.Add(k.Name, CalcH(stv, vals.Count));
+            }
+            Console.WriteLine("\tFinished calculating Bandwith!");
+        }
+
+        private float CalcMean(List<float> vals)
+        {
+            float s = 0;
+            foreach (float f in vals)
+                s += f;
+            return s / ((float)vals.Count);
+        }
+
+        private float CalcStdDev(List<float> vals, float mean)
+        {
+            float s = 0;
+            foreach (float f in vals)
+                s += (float) Math.Pow((f - mean), 2);
+            return (float) Math.Sqrt(s / ((float)vals.Count));
+        }
+
+        private float CalcH(float stddev, int n)
+        {
+            return (float) (1.06 * stddev * Math.Pow(n, -0.2));
         }
 
         public void InitializeTables()
