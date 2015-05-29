@@ -16,23 +16,23 @@ namespace DataAnalyseP1
             // setup database connection
             m_dbConnection = new SQLiteConnection("Data Source=autompg.db;Version=3;");
             m_dbConnection.Open();
-
+            
             /*
             // load metadb to dictionary
             SQLiteConnection meta_dbConnection = new SQLiteConnection("Data Source=meta.db;Version=3;");
             meta_dbConnection.Open();
 
             // metadb variables
-            string val = "val";
-            string qfidfval = "qfidfval";
+            string val = "attr";
+            string qfidfval = "qfidf";
             string imp = "importance";
-
+            string temp = "SELECT " + val + ", " + qfidfval + ", " + imp + " FROM Type;";
             // Type
-            SQLiteCommand command = new SQLiteCommand("SELECT " + val + ", " + qfidfval + ", " + imp + " FROM type;", meta_dbConnection);
+            SQLiteCommand command = new SQLiteCommand("SELECT * FROM Cylinders;", meta_dbConnection); //"SELECT " + val + ", " + qfidfval + ", " + imp + " FROM type;", meta_dbConnection);
             SQLiteDataReader reader = command.ExecuteReader();
-            Dictionary<string, Tuple<float, float>> type = new Dictionary<string, Tuple<float, float>>();
-            while (reader.Read())            
-                type.Add((string)reader[0], new int[2]{(float)reader[1], (float)reader[2]});
+            Dictionary<string, float[]> type = new Dictionary<string, float[]>();
+            while (reader.Read())
+                type.Add((string)reader[0], new float[2]{(float)reader[1], (float)reader[2]});
             metadb.Add("type", type);
 
             // ...
@@ -49,7 +49,7 @@ namespace DataAnalyseP1
             // create a list for each attr based on sim value
             Dictionary<int, float>[] similarity_tables = new Dictionary<int, float>[query.Count];
             int[][] indexes = new int[query.Count][];
-            List<string> numerical = new List<string>() { "id", "mpg", "cylinders", "displacement", "horsepower", "weight", "accelaration", "model_year", "origin"};
+            List<string> numerical = new List<string>() { "mpg", "cylinders", "displacement", "horsepower", "weight", "acceleration", "model_year", "origin" };
             List<string> categorical = new List<string>() { "brand", "model", "type" };
             List<string> seenattributes = new List<string>();
             int i = 0;
@@ -114,6 +114,7 @@ namespace DataAnalyseP1
                         return firstPair.Value.CompareTo(nextPair.Value);
                     }
                 );
+
                 // build array
                 indexes[i] = new int[similarity_table.Count];
                 int j = similarity_table.Count - 1;
@@ -128,21 +129,17 @@ namespace DataAnalyseP1
                 i++;
             }
 
-            /*
-            // obtain importance values for missing attributes
+            // obtain missing attributes
             List<string> missingattributes = new List<string>();
             foreach (string elem in numerical)            
                 if (!(seenattributes.Contains(elem)))
                     missingattributes.Add(elem);
             foreach (string elem in categorical)
                 if (!(seenattributes.Contains(elem)))
-                    missingattributes.Add(elem);
-            Dictionary<int, float>[] importance_tabel = new Dictionary<int, float>[missingattributes.Count];
-            // ...
-            */
+                    missingattributes.Add(elem);           
 
             // get the Top-K ID's
-            List<Tuple<int, float>> topk = TopKSelection(k, indexes, similarity_tables);
+            List<Tuple<int, float>> topk = TopKSelection(k, indexes, similarity_tables, missingattributes);
 
             // get the Top-K tuples
             i = 0;
@@ -165,7 +162,7 @@ namespace DataAnalyseP1
             return ouput;
         }
 
-        public List<Tuple<int, float>> TopKSelection(int k , int[][] indexes, Dictionary<int, float>[] sim_tabel)
+        public List<Tuple<int, float>> TopKSelection(int k , int[][] indexes, Dictionary<int, float>[] sim_tabel, List<string> missing_attributes)
         {
             // --- Top-K selection using Fagin's Algorithm ---
             // m = number of attribute tables
@@ -241,9 +238,32 @@ namespace DataAnalyseP1
                     }
                     else if (score == topk[i].Item2)
                     {
-                        // break tie
-                        // using missing attribute score
-                        // ...
+                        // break tie, using the importance values to calculate the missing attribute scores
+                        float score_a = 0;
+                        float score_b = 0;
+
+                        foreach (string attr in missing_attributes)
+                        {
+                            // retrieve attribute values for a and b, and add this value to the importance score
+                            SQLiteCommand command = new SQLiteCommand("SELECT " + attr + " FROM autompg WHERE id IN (" + entry.Key + ", " + topk[i].Item1 + ");", m_dbConnection);
+                            SQLiteDataReader reader = command.ExecuteReader();
+                            
+                            reader.Read();
+                            string val_a = reader[0].ToString();
+                            //score_a += metadb[attr][val_a][1];
+
+                            reader.Read();
+                            string val_b = reader[0].ToString();
+                            //score_b += metadb[attr][val_b][1];
+                        }
+
+                        // compare the total missing attribute scores
+                        if (score_a > score_b)
+                        {
+                            topk.Insert(i, new Tuple<int, float>(entry.Key, score));
+                            inserted = true;
+                            break;
+                        }
                     }
                 }
                 // if not inserted and the topk is incomplete then add x to the end of the topk list
