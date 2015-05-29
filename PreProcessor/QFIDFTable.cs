@@ -16,7 +16,7 @@ namespace PreProcessor
             Name = n;
         }
 
-        protected Dictionary<string, Attribute> table;
+        public Dictionary<string, Attribute> table;
         public abstract void Initialize(List<string> vals);
 
         public void SetQF(Dictionary<Tuple<string, string>, int> rqfs, Dictionary<string, int> rmaxqfs)
@@ -54,7 +54,7 @@ namespace PreProcessor
             {
                 statements[i] = string.Format("INSERT OR REPLACE INTO {0} VALUES (\'{1}\', {2}, {3});", tableName, kvp.Key, kvp.Value.GetQFIDF(), kvp.Value.GetImportance());
                 i++;
-            }
+    }
             File.AppendAllLines(file, statements);
         }
 

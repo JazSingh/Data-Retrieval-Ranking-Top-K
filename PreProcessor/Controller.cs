@@ -54,7 +54,7 @@ namespace PreProcessor
             CalcQF();
             CalcJaccard();
             CalcBandwith();
-            //IDF
+            CalcIDF();
             Console.WriteLine("Finished Calculating!");
         }
         private void CalcQF()
@@ -172,6 +172,48 @@ namespace PreProcessor
         {
             return (float) (1.06 * stddev * Math.Pow(n, -0.2));
         }
+
+        private void CalcIDF()
+        {
+            Console.WriteLine("\tCalculating IDF...");
+            List<QFIDFNumTable> numtables = new List<QFIDFNumTable>();
+            foreach (QFIDFTable t in QFIDFTables)
+                if (typeof(QFIDFNumTable) == t.GetType())
+                    numtables.Add((QFIDFNumTable)t);
+
+            foreach (QFIDFNumTable k in numtables)
+            {
+                // IDF calculated according to eq 2 in the paper
+                string attr = k.Name;
+
+                // bandwidth
+                float h = Bandwith.table[attr];
+                
+                // number of entry's
+                int n = k.table.Count;
+
+                foreach (KeyValuePair<string, Attribute> entry in k.table)
+                {
+                    float t_a = (float)Convert.ToDouble(entry.Key);
+                    Attribute a = entry.Value;
+                    
+                    double s = 0;
+                    foreach (KeyValuePair<string, Attribute> other in k.table)                    
+                        if (entry.Key != other.Key)
+                        {
+                            float t_b = (float)Convert.ToDouble(other.Key);
+                            s += Math.Pow(Math.E, (-0.5 * (((t_b - t_a) / h) * (t_b - t_a) / h)));
+                        }
+
+                    // IDF score
+                    float IDF = (float)Math.Log(n / s);
+
+                    // Set IDF score
+                    a.SetIDF(IDF);
+                }
+            }
+            Console.WriteLine("\tFinished calculating IDF!");        
+        }        
 
         public void InitializeTables()
         {
