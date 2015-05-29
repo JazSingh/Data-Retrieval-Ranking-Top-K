@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace PreProcessor
 {
@@ -29,6 +30,8 @@ namespace PreProcessor
             }
         }
 
+
+        public abstract void Flush(string file);
     }
 
     public class QFIDFCatTable : QFIDFTable
@@ -42,6 +45,30 @@ namespace PreProcessor
                 table.Add(val, new CatAttribute(val));
         }
 
+        public override void Flush(string file)
+        {
+            string tableName = GetName();
+            int i = 0;
+            string[] statements = new string[table.Count];
+            foreach(var kvp in table)
+            {
+                statements[i] = string.Format("INSERT OR REPLACE INTO {0} VALUES (\'{1}\', {2}, {3});", tableName, kvp.Key, kvp.Value.GetQFIDF(), kvp.Value.GetImportance());
+                i++;
+            }
+            File.AppendAllLines(file, statements);
+        }
+
+        private string GetName()
+        {
+            switch (Name)
+            {
+                case "type": return "Type";
+                case "model": return "Model";
+                case "brand": return "Brand";
+            }
+            throw new Exception();
+        }
+
     }
 
     public class QFIDFNumTable : QFIDFTable
@@ -52,6 +79,35 @@ namespace PreProcessor
             table = new Dictionary<string, Attribute>(vals.Count);
             foreach (string val in vals)
                 table.Add(val, new NumAttribute(val));
+        }
+
+        public override void Flush(string file)
+        {
+            string tableName = GetName();
+            int i = 0;
+            string[] statements = new string[table.Count];
+            foreach (var kvp in table)
+            {
+                statements[i] = string.Format("INSERT OR REPLACE INTO {0} VALUES ({1}, {2}, {3});", tableName, kvp.Key, kvp.Value.GetQFIDF(), kvp.Value.GetImportance());
+                i++;
+            }
+            File.AppendAllLines(file, statements);
+        }
+
+        private string GetName()
+        {
+            switch (Name)
+            {
+                case "origin": return "Origin";
+                case "model_year": return "ModelYear";
+                case "acceleration": return "Acceleration";
+                case "weight": return "Weight";
+                case "horsepower": return "Horsepower";
+                case "displacement": return "Displacement";
+                case "cylinders": return "Cylinders";
+                case "mpg": return "Mpg";
+            }
+            throw new Exception();
         }
     }
 }

@@ -32,6 +32,16 @@ namespace PreProcessor
             importance = (float) Math.Log10(QF);
         }
 
+        public float GetImportance()
+        {
+            return importance;
+        }
+
+        public float GetQFIDF()
+        {
+            return QF * IDF;
+        }
+
         public abstract void SetIDF(/*nog bepalen*/);
     }
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace PreProcessor
 {
@@ -44,6 +45,7 @@ namespace PreProcessor
                 Cylinders, Displacement, Horsepower, Weight, Acceleration, ModelYear, Origin
             };
             Start();
+            Flush();
         }
 
         private void Start()
@@ -53,7 +55,6 @@ namespace PreProcessor
             CalcJaccard();
             CalcBandwith();
             //IDF
-            //Bandwith
             Console.WriteLine("Finished Calculating!");
         }
         private void CalcQF()
@@ -188,6 +189,16 @@ namespace PreProcessor
             ModelYear.Initialize(dc.GetDistinctAttributeValues("model_year"));
             Origin.Initialize(dc.GetDistinctAttributeValues("origin"));
             Console.WriteLine("DONE Initializing table classes!");
+        }
+
+        public void Flush()
+        {
+            string file = "metaload.txt";
+            File.WriteAllLines(file, new string[] {"--Statements to fill db"});
+            foreach(var t in QFIDFTables)
+                t.Flush(file);
+            Bandwith.Flush(file);
+            AttributeOverlap.Flush(file);
         }
     }
 }
