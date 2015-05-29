@@ -29,7 +29,7 @@ namespace PreProcessor
         //Overlap table
         OverlapTable AttributeOverlap = new OverlapTable();
         //Bandwith table
-        BandwithTable Bandwith = new BandwithTable();
+        BandwidthTable Bandwidth = new BandwidthTable();
 
         List<QFIDFTable> QFIDFTables;
         Dictionary<string, int> RMaxQFs = new Dictionary<string, int>();
@@ -147,7 +147,7 @@ namespace PreProcessor
             {
                 var vals = dc.GetAllVals(k.Name);
                 float stv = CalcStdDev(vals, CalcMean(vals));
-                Bandwith.table.Add(k.Name, CalcH(stv, vals.Count));
+                Bandwidth.table.Add(k.Name, CalcH(stv, vals.Count));
             }
             Console.WriteLine("\tFinished calculating Bandwith!");
         }
@@ -193,7 +193,7 @@ namespace PreProcessor
                     int n = k.table.Count;
 
                     // bandwidth
-                    float h = Bandwith.table[attr];
+                    float h = Bandwidth.table[attr];
                     foreach (KeyValuePair<string, Attribute> entry in k.table)
                     {
                         float t_a = (float)Convert.ToDouble(entry.Key);
@@ -263,7 +263,7 @@ namespace PreProcessor
             File.WriteAllLines(file, new string[] {"--Statements to fill db"});
             foreach(var t in QFIDFTables)
                 t.Flush(file);
-            Bandwith.Flush(file);
+            Bandwidth.Flush(file);
             AttributeOverlap.Flush(file);
         }
     }

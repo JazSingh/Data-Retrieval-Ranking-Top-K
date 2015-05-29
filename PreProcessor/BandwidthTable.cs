@@ -7,17 +7,17 @@ using System.IO;
 
 namespace PreProcessor
 {
-    public class BandwithTable
+    public class BandwidthTable
     {
         public Dictionary<string, float> table;
-        public BandwithTable()
+        public BandwidthTable()
         {
             table = new Dictionary<string, float>();
         }
 
         public void Flush(string file)
         {
-            string tableName = "Bandwith";
+            string tableName = "Bandwidth";
             int i = 0;
             string[] statements = new string[table.Count];
             foreach (var kvp in table)

@@ -74,7 +74,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Attribute.cs" />
-    <Compile Include="BandwithTable.cs" />
+    <Compile Include="BandwidthTable.cs" />
     <Compile Include="Controller.cs" />
     <Compile Include="DatabaseController.cs" />
     <Compile Include="OverlapTable.cs" />

@@ -22,7 +22,7 @@ namespace PreProcessor
         public void SetQF(int RQF, int RMaxQF)
         {
             if (RMaxQF == 0) // er wordt nooit gezocht in de workload naar dit attribuut, QF moet laag zijn
-                QF = 1f/10000f;
+                QF = 1f/7500f;
             else
                 QF = ((float)RQF + 1)
                    / ((float)RMaxQF + 1);
