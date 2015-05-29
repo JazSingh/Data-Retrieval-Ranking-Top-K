@@ -45,8 +45,6 @@ namespace PreProcessor
         {
             return QF * IDF;
         }
-
-        public abstract void SetIDF(/*nog bepalen*/);
     }
 
     public class CatAttribute : Attribute

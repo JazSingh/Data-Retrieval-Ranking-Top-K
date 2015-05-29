@@ -181,36 +181,60 @@ namespace PreProcessor
                 if (typeof(QFIDFNumTable) == t.GetType())
                     numtables.Add((QFIDFNumTable)t);
 
-            foreach (QFIDFNumTable k in numtables)
+            foreach (QFIDFTable k in QFIDFTables)
             {
                 // IDF calculated according to eq 2 in the paper
                 string attr = k.Name;
-
-                // bandwidth
-                float h = Bandwith.table[attr];
-                
-                // number of entry's
-                int n = k.table.Count;
-
-                foreach (KeyValuePair<string, Attribute> entry in k.table)
+                                
+                // numerical attributes
+                if (typeof(QFIDFNumTable) == k.GetType())
                 {
-                    float t_a = (float)Convert.ToDouble(entry.Key);
-                    Attribute a = entry.Value;
-                    
-                    double s = 0;
-                    foreach (KeyValuePair<string, Attribute> other in k.table)                    
-                        if (entry.Key != other.Key)
-                        {
-                            float t_b = (float)Convert.ToDouble(other.Key);
+                    // number of entry's
+                    int n = k.table.Count;
+
+                    // bandwidth
+                    float h = Bandwith.table[attr];
+                    foreach (KeyValuePair<string, Attribute> entry in k.table)
+                    {
+                        float t_a = (float)Convert.ToDouble(entry.Key);
+                        Attribute a = entry.Value;
+
+                        double s = 0;
+                        foreach (float t_b in dc.GetAllVals(k.Name))                        
                             s += Math.Pow(Math.E, (-0.5 * (((t_b - t_a) / h) * (t_b - t_a) / h)));
-                        }
+                        
+                        // IDF score
+                        float IDF = (float)Math.Log(n / s);
 
-                    // IDF score
-                    float IDF = (float)Math.Log(n / s);
-
-                    // Set IDF score
-                    a.SetIDF(IDF);
+                        // Set IDF score
+                        a.SetIDF(IDF);
+                    }
                 }
+
+                // cat attributes
+                else
+                {
+                    // full cat table
+                    List<string> table = dc.GetAllCatVals(k.Name);
+
+                    // number of entry's
+                    int n = table.Count;
+
+                    foreach (KeyValuePair<string, Attribute> entry in k.table)
+                    {
+                        Attribute a = entry.Value;                        
+
+                        // frequency
+                        int f = 0;
+                        foreach (string t_b in table)
+                            if (entry.Key == t_b)
+                                f++;
+                        
+                        float idf = (float)Math.Log(n / f);
+                        a.SetIDF(idf);
+                    }
+                }
+                
             }
             Console.WriteLine("\tFinished calculating IDF!");        
         }        

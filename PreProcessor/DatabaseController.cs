@@ -47,6 +47,16 @@ namespace PreProcessor
             return vals;
         }
 
+        public List<string> GetAllCatVals(string col)
+        {
+            string sql = string.Format("SELECT {0} FROM autompg", col);
+            SQLiteDataReader reader = ExecuteGetQuery(sql);
+            List<string> vals = new List<string>();
+            while (reader.Read())
+                vals.Add(reader[col].ToString());
+            return vals;
+        }
+
         private SQLiteDataReader ExecuteGetQuery(string sql)
         {
             SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
