@@ -292,11 +292,19 @@ namespace DataAnalyseP1
                             SQLiteDataReader reader = command.ExecuteReader();
                             
                             reader.Read();
-                            string val_a = reader[0].ToString();
+                            string val_a;
+                            if (numerical.Contains(attr))
+                                val_a = Math.Round(Convert.ToDouble(reader[0]), 1).ToString();
+                            else
+                                val_a = reader[0].ToString();
                             score_a += metadb[attr][val_a][1];
 
                             reader.Read();
-                            string val_b = reader[0].ToString();
+                            string val_b;
+                            if (numerical.Contains(attr))
+                                val_b = Math.Round(Convert.ToDouble(reader[0]), 1).ToString();
+                            else
+                                val_b = reader[0].ToString();
                             score_b += metadb[attr][val_b][1];
                         }
 
@@ -325,18 +333,26 @@ namespace DataAnalyseP1
         // Numerical Similarity
         public float num_sim(string attr, int a, int b)
         {
-            float h = metadb["bandwidth"][attr][0];
-            //qfidf(b)
-            float b_weight = metadb[attr][b.ToString()][0];
-
-            return (float)Math.Pow(Math.E, -0.5 * ((a - b) / h) * ((a - b) / h)) * b_weight;
+            if (a == b)
+            {
+                float res = metadb[attr][a.ToString()][0];
+                return metadb[attr][a.ToString()][0];
+            }
+            else
+            {
+                float h = metadb["bandwidth"][attr][0];
+                //qfidf(b)
+                float b_weight = metadb[attr][b.ToString()][0];
+                float res = (float)Math.Pow(Math.E, -0.5 * Math.Pow(((a - b) / h), 2)) * b_weight;
+                return (float)Math.Pow(Math.E, -0.5 * Math.Pow(((a - b) / h), 2)) * b_weight;
+            }
         }
 
         // Categorical Similarity
         public float cat_sim(string attr, string a, string b)
         {
             if (a == b)
-                return metadb[attr][b][0];
+                return metadb[attr][a][0];
             else
                 if (overlap.ContainsKey(new Tuple<string, string, string>(attr, a, b)))
                     return overlap[new Tuple<string, string, string>(attr, a, b)];
