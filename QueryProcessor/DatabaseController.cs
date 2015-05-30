@@ -66,13 +66,13 @@ namespace DataAnalyseP1
                     SQLiteDataReader reader = command.ExecuteReader();
                     while (reader.Read())
                     {
-                        int key = Convert.ToInt32(reader[0]);
+                        int key = Convert.ToInt32(reader[0], System.Globalization.NumberFormatInfo.InvariantInfo);
                         int b = Convert.ToInt32(reader[1]);
 
                         float s = 0;
                         foreach (string val in attribute.Value)
                         {
-                            int a = Convert.ToInt32(val);
+                            int a = Convert.ToInt32(val, System.Globalization.NumberFormatInfo.InvariantInfo);
                             s = Math.Max(s, num_sim(attr, a, b));
                         }
 
@@ -89,7 +89,7 @@ namespace DataAnalyseP1
                     SQLiteDataReader reader = command.ExecuteReader();
                     while (reader.Read())
                     {
-                        int key = Convert.ToInt32(reader[0]);
+                        int key = Convert.ToInt32(reader[0], System.Globalization.NumberFormatInfo.InvariantInfo);
                         string b = (string)reader[1];
 
                         float s = 0;
