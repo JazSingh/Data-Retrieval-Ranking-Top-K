@@ -99,7 +99,7 @@ namespace PreProcessor
             switch (Name)
             {
                 case "origin": return "Origin";
-                case "model_year": return "ModelYear";
+                case "model_year": return "Model_Year";
                 case "acceleration": return "Acceleration";
                 case "weight": return "Weight";
                 case "horsepower": return "Horsepower";

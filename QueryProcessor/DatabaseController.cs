@@ -11,33 +11,49 @@ namespace DataAnalyseP1
     {
         SQLiteConnection m_dbConnection;
         Dictionary<string, Dictionary<string, float[]>> metadb;
+        List<string> numerical;
+        List<string> categorical;
+        List<string> all_attributes;
+
         public DatabaseController()
         {
             // setup database connection
             m_dbConnection = new SQLiteConnection("Data Source=autompg.db;Version=3;");
-            m_dbConnection.Open();
+            m_dbConnection.Open();            
             
-            /*
             // load metadb to dictionary
-            SQLiteConnection meta_dbConnection = new SQLiteConnection("Data Source=meta.db;Version=3;");
+            SQLiteConnection meta_dbConnection = new SQLiteConnection("Data Source=metadb.db;Version=3;");
             meta_dbConnection.Open();
+
+            // attributes
+            numerical = new List<string>() { "mpg", "cylinders", "displacement", "horsepower", "weight", "acceleration", "model_year", "origin" };
+            categorical = new List<string>() { "brand", "model", "type" };
+            all_attributes = new List<string>() { "mpg", "cylinders", "displacement", "horsepower", "weight", "acceleration", "model_year", "origin", "brand", "model", "type" };
+            
+            // metadb
+            metadb = new Dictionary<string, Dictionary<string, float[]>>();
 
             // metadb variables
             string val = "attr";
             string qfidfval = "qfidf";
             string imp = "importance";
-            string temp = "SELECT " + val + ", " + qfidfval + ", " + imp + " FROM Type;";
-            // Type
-            SQLiteCommand command = new SQLiteCommand("SELECT * FROM Cylinders;", meta_dbConnection); //"SELECT " + val + ", " + qfidfval + ", " + imp + " FROM type;", meta_dbConnection);
-            SQLiteDataReader reader = command.ExecuteReader();
-            Dictionary<string, float[]> type = new Dictionary<string, float[]>();
-            while (reader.Read())
-                type.Add((string)reader[0], new float[2]{(float)reader[1], (float)reader[2]});
-            metadb.Add("type", type);
 
-            // ...
-            */
-            
+            // load categorical and numerical data
+            foreach (string attr in all_attributes)
+            {
+                SQLiteCommand command = new SQLiteCommand("SELECT " + val + ", " + qfidfval + ", " + imp + " FROM " + attr + ";", meta_dbConnection);
+                SQLiteDataReader reader = command.ExecuteReader();
+                Dictionary<string, float[]> tabel = new Dictionary<string, float[]>();
+                while (reader.Read())
+                {
+                    float[] info = new float[2];
+                    info[0] = (float)Convert.ToDouble(reader[qfidfval]);
+                    info[1] = (float)Convert.ToDouble(reader[imp]);
+                    tabel.Add(reader[val].ToString(), info);
+                }
+                metadb.Add(attr, tabel);
+            }          
+
         }
 
         public string[] ExecuteQuery(Dictionary<string, List<string>> query, int k)
@@ -49,8 +65,6 @@ namespace DataAnalyseP1
             // create a list for each attr based on sim value
             Dictionary<int, float>[] similarity_tables = new Dictionary<int, float>[query.Count];
             int[][] indexes = new int[query.Count][];
-            List<string> numerical = new List<string>() { "mpg", "cylinders", "displacement", "horsepower", "weight", "acceleration", "model_year", "origin" };
-            List<string> categorical = new List<string>() { "brand", "model", "type" };
             List<string> seenattributes = new List<string>();
             int i = 0;
             foreach (KeyValuePair<string, List<string>> attribute in query)
