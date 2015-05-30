@@ -61,7 +61,7 @@ qfidf real,
 importance real
 );
 
-CREATE TABLE ModelYear
+CREATE TABLE Model_Year
 (
 attr real PRIMARY KEY,
 qfidf real,
