@@ -24,7 +24,7 @@ namespace PreProcessor
             foreach (var kvp in table)
             {
                 statements[i] = string.Format("INSERT OR REPLACE INTO {0} VALUES (\'{1}\', \'{2}\', \'{3}\', {4});"
-                    , tableName, kvp.Key.Item1, kvp.Key.Item2, kvp.Key.Item3, kvp.Value.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
+                    , tableName, kvp.Key.Item1, kvp.Key.Item2.ToString(System.Globalization.NumberFormatInfo.InvariantInfo), kvp.Key.Item3.ToString(System.Globalization.NumberFormatInfo.InvariantInfo), kvp.Value.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
                 i++;
             }
             File.AppendAllLines(file, statements);
