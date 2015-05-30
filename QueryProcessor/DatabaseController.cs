@@ -293,11 +293,11 @@ namespace DataAnalyseP1
                             
                             reader.Read();
                             string val_a = reader[0].ToString();
-                            //score_a += metadb[attr][val_a][1];
+                            score_a += metadb[attr][val_a][1];
 
                             reader.Read();
                             string val_b = reader[0].ToString();
-                            //score_b += metadb[attr][val_b][1];
+                            score_b += metadb[attr][val_b][1];
                         }
 
                         // compare the total missing attribute scores
