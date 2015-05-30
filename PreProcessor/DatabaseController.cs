@@ -33,7 +33,7 @@ namespace PreProcessor
             SQLiteDataReader reader = ExecuteGetQuery(sql);
             List<string> vals = new List<string>();
             while (reader.Read())
-                vals.Add(reader[col].ToString());
+                vals.Add(reader[col].ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
             return vals;
         }
 
@@ -43,7 +43,7 @@ namespace PreProcessor
             SQLiteDataReader reader = ExecuteGetQuery(sql);
             List<float> vals = new List<float>();
             while (reader.Read())
-                vals.Add(float.Parse(reader[col].ToString()));
+                vals.Add(float.Parse(reader[col].ToString(), System.Globalization.NumberFormatInfo.InvariantInfo));
             return vals;
         }
 
