@@ -11,6 +11,7 @@ namespace DataAnalyseP1
     {
         SQLiteConnection m_dbConnection;
         Dictionary<string, Dictionary<string, float[]>> metadb;
+        Dictionary<Tuple<string, string, string>, float> overlap;
         List<string> numerical;
         List<string> categorical;
         List<string> all_attributes;
@@ -32,18 +33,24 @@ namespace DataAnalyseP1
             
             // metadb
             metadb = new Dictionary<string, Dictionary<string, float[]>>();
+            overlap = new Dictionary<Tuple<string, string, string>, float>();
 
             // metadb variables
             string val = "attr";
             string qfidfval = "qfidf";
             string imp = "importance";
 
+            // variables needed for loading the metadb
+            SQLiteCommand command;
+            SQLiteDataReader reader;
+            Dictionary<string, float[]> tabel;
+
             // load categorical and numerical data
             foreach (string attr in all_attributes)
             {
-                SQLiteCommand command = new SQLiteCommand("SELECT " + val + ", " + qfidfval + ", " + imp + " FROM " + attr + ";", meta_dbConnection);
-                SQLiteDataReader reader = command.ExecuteReader();
-                Dictionary<string, float[]> tabel = new Dictionary<string, float[]>();
+                command = new SQLiteCommand("SELECT " + val + ", " + qfidfval + ", " + imp + " FROM " + attr + ";", meta_dbConnection);
+                reader = command.ExecuteReader();
+                tabel = new Dictionary<string, float[]>();
                 while (reader.Read())
                 {
                     float[] info = new float[2];
@@ -52,8 +59,29 @@ namespace DataAnalyseP1
                     tabel.Add(reader[val].ToString(), info);
                 }
                 metadb.Add(attr, tabel);
-            }          
+            } 
+         
+            // load bandwidth
+            command = new SQLiteCommand("SELECT " + val + ", bandwith FROM bandwidth;", meta_dbConnection);
+            reader = command.ExecuteReader();
+            tabel = new Dictionary<string, float[]>();
+            while (reader.Read())
+            {
+                float[] info = new float[1];
+                info[0] = (float)Convert.ToDouble(reader["bandwith"]);
+                tabel.Add(reader[val].ToString(), info);
+            }
+            metadb.Add("bandwidth", tabel);
 
+            // load attribute-overlap
+            command = new SQLiteCommand("SELECT col, attr1, attr2, similarity FROM attributeoverlap;", meta_dbConnection);
+            reader = command.ExecuteReader();
+            tabel = new Dictionary<string, float[]>();
+            while (reader.Read())            
+                overlap.Add(new Tuple<string, string, string>(reader["col"].ToString(), 
+                                                            reader["attr1"].ToString(), 
+                                                            reader["attr2"].ToString()), 
+                                                            (float)Convert.ToDouble(reader["similarity"]));            
         }
 
         public string[] ExecuteQuery(Dictionary<string, List<string>> query, int k)
@@ -167,8 +195,9 @@ namespace DataAnalyseP1
                 SQLiteDataReader reader = command.ExecuteReader();
                 reader.Read();
                 ouput[i] = "ID: " + reader["id"] +
+                           "\tBrand: " + reader["brand"] +
                            "\tType: " + reader["type"] +
-                           "\tName: " + reader["model"];
+                           "\tModel: " + reader["model"];
                     
                 i++;
             }
@@ -264,11 +293,11 @@ namespace DataAnalyseP1
                             
                             reader.Read();
                             string val_a = reader[0].ToString();
-                            //score_a += metadb[attr][val_a][1];
+                            score_a += metadb[attr][val_a][1];
 
                             reader.Read();
                             string val_b = reader[0].ToString();
-                            //score_b += metadb[attr][val_b][1];
+                            score_b += metadb[attr][val_b][1];
                         }
 
                         // compare the total missing attribute scores
@@ -296,24 +325,23 @@ namespace DataAnalyseP1
         // Numerical Similarity
         public float num_sim(string attr, int a, int b)
         {
-            //float h = metadb["bandwidth"][attr];
+            float h = metadb["bandwidth"][attr][0];
             //qfidf(b)
-            //float b_weight = metadb["attr"][b][0]
+            float b_weight = metadb[attr][b.ToString()][0];
 
-            // return Math.Pow(Math.E, 0.5 * ((a - b) / h) * ((a - b) / h)) * b_weight
-            return 1;
+            return (float)Math.Pow(Math.E, -0.5 * ((a - b) / h) * ((a - b) / h)) * b_weight;
         }
 
         // Categorical Similarity
         public float cat_sim(string attr, string a, string b)
         {
-            /*
             if (a == b)
-                return metadb[attr][b][0]
+                return metadb[attr][b][0];
             else
-                return metadb["overlap"][a][0]
-            */
-            return 1;
+                if (overlap.ContainsKey(new Tuple<string, string, string>(attr, a, b)))
+                    return overlap[new Tuple<string, string, string>(attr, a, b)];
+                else
+                    return 0;
         }
     }
 }
