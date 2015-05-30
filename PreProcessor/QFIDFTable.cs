@@ -88,7 +88,7 @@ namespace PreProcessor
             string[] statements = new string[table.Count];
             foreach (var kvp in table)
             {
-                statements[i] = string.Format("INSERT OR REPLACE INTO {0} VALUES ({1}, {2}, {3});", tableName, kvp.Key, kvp.Value.GetQFIDF().ToString(System.Globalization.NumberFormatInfo.InvariantInfo), kvp.Value.GetImportance().ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
+                statements[i] = string.Format("INSERT OR REPLACE INTO {0} VALUES ({1}, {2}, {3});", tableName, kvp.Key.ToString(System.Globalization.NumberFormatInfo.InvariantInfo), kvp.Value.GetQFIDF().ToString(System.Globalization.NumberFormatInfo.InvariantInfo), kvp.Value.GetImportance().ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
                 i++;
             }
             File.AppendAllLines(file, statements);
