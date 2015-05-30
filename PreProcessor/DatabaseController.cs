@@ -33,7 +33,13 @@ namespace PreProcessor
             SQLiteDataReader reader = ExecuteGetQuery(sql);
             List<string> vals = new List<string>();
             while (reader.Read())
-                vals.Add(reader[col].ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
+            {
+                float f;
+                if (float.TryParse(reader[col].ToString(), out f))
+                    vals.Add(f.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
+                else
+                    vals.Add(reader[col].ToString());
+            }
             return vals;
         }
 
