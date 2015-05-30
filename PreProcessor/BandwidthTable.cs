@@ -22,7 +22,7 @@ namespace PreProcessor
             string[] statements = new string[table.Count];
             foreach (var kvp in table)
             {
-                statements[i] = string.Format("INSERT OR REPLACE INTO {0} VALUES (\'{1}\', {2});", tableName, kvp.Key, kvp.Value);
+                statements[i] = string.Format("INSERT OR REPLACE INTO {0} VALUES (\'{1}\', {2});", tableName, kvp.Key, kvp.Value.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
                 i++;
             }
             File.AppendAllLines(file, statements);
