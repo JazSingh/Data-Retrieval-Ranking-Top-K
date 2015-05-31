@@ -16,17 +16,6 @@ namespace PreProcessor
             m_dbConnection.Open();
         }
 
-        //TODO
-        public Dictionary<string, int> GetCatData(string col)
-        {
-            throw new NotImplementedException();
-            string sql = string.Format("SELECT {0}, count(*) as \"tel\" FROM autompg GROUP BY {0}", col);
-            SQLiteDataReader reader = ExecuteGetQuery(sql);
-            while (reader.Read())
-                Console.WriteLine(col + ": " + reader[col] + "\tCount: " + reader["tel"]);
-            return null;
-        }
-
         public List<string> GetDistinctAttributeValues(string col)
         {
             string sql = string.Format("SELECT DISTINCT {0} FROM autompg", col);

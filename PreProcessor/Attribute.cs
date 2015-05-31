@@ -11,7 +11,6 @@ namespace PreProcessor
         string name;
         double QF;
         double IDF;
-        double QFIDF;
         double importance;
 
         public Attribute(string name)

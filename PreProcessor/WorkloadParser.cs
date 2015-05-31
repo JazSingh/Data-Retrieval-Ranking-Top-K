@@ -14,8 +14,6 @@ namespace PreProcessor
         string[] queries;
         int numItems = 0;
 
-        int RMaxQF = 0;
-
         List<Tuple<string, string[], int>> INClauses;
 
         public WorkloadParser()
