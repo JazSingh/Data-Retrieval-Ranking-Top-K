@@ -9,10 +9,10 @@ namespace PreProcessor
     public abstract class Attribute
     {
         string name;
-        float QF;
-        float IDF;
-        float QFIDF;
-        float importance;
+        double QF;
+        double IDF;
+        double QFIDF;
+        double importance;
 
         public Attribute(string name)
         {
@@ -24,27 +24,27 @@ namespace PreProcessor
             if (RMaxQF == 0) // er wordt nooit gezocht in de workload naar dit attribuut, QF moet laag zijn
                 QF = 1f/7500f;
             else
-                QF = ((float)RQF + 1)
-                   / ((float)RMaxQF + 1);
+                QF = ((double)RQF + 1)
+                   / ((double)RMaxQF + 1);
 
             SetImportance();
         }
 
         private void SetImportance()
         {
-            importance = (float) Math.Log10(QF);
+            importance = Math.Log10(QF);
         }
 
-        public void SetIDF(float idf)
+        public void SetIDF(double idf)
         {
             IDF = idf;
         }
-        public float GetImportance()
+        public double GetImportance()
         {
             return importance;
         }
 
-        public float GetQFIDF()
+        public double GetQFIDF()
         {
             return QF * IDF;
         }

@@ -34,8 +34,8 @@ namespace PreProcessor
             List<string> vals = new List<string>();
             while (reader.Read())
             {
-                float f;
-                if (float.TryParse(reader[col].ToString(), out f))
+                double f;
+                if (double.TryParse(reader[col].ToString(), out f))
                     vals.Add(f.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
                 else
                     vals.Add(reader[col].ToString());
@@ -43,13 +43,13 @@ namespace PreProcessor
             return vals;
         }
 
-        public List<float> GetAllVals(string col)
+        public List<double> GetAllVals(string col)
         {
             string sql = string.Format("SELECT {0} FROM autompg", col);
             SQLiteDataReader reader = ExecuteGetQuery(sql);
-            List<float> vals = new List<float>();
+            List<double> vals = new List<double>();
             while (reader.Read())
-                vals.Add(float.Parse(reader[col].ToString(), System.Globalization.NumberFormatInfo.InvariantInfo));
+                vals.Add(double.Parse(reader[col].ToString(), System.Globalization.NumberFormatInfo.InvariantInfo));
             return vals;
         }
 

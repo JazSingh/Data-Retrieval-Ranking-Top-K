@@ -9,10 +9,10 @@ namespace PreProcessor
 {
     public class BandwidthTable
     {
-        public Dictionary<string, float> table;
+        public Dictionary<string, double> table;
         public BandwidthTable()
         {
-            table = new Dictionary<string, float>();
+            table = new Dictionary<string, double>();
         }
 
         public void Flush(string file)

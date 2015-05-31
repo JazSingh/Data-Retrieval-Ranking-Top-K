@@ -9,11 +9,11 @@ namespace PreProcessor
 {
     public class OverlapTable
     {
-        public Dictionary<Tuple<string, string, string>, float> table;
+        public Dictionary<Tuple<string, string, string>, double> table;
 
         public OverlapTable()
         {
-            table = new Dictionary<Tuple<string, string, string>, float>();
+            table = new Dictionary<Tuple<string, string, string>, double>();
         }
 
         public void Flush(string file)

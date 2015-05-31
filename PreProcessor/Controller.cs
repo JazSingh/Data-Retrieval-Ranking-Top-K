@@ -86,8 +86,8 @@ namespace PreProcessor
             {
                 //k = |A intersect B|
                 //|A union B| = |A| + |B| - |A intersect B|
-                float k = ((float)kvp.Value)
-                    / ((float)singletons[new Tuple<string, string>(kvp.Key.Item1, kvp.Key.Item2)] + singletons[new Tuple<string, string>(kvp.Key.Item1, kvp.Key.Item3)] - kvp.Value);
+                double k = ((double)kvp.Value)
+                    / ((double)singletons[new Tuple<string, string>(kvp.Key.Item1, kvp.Key.Item2)] + singletons[new Tuple<string, string>(kvp.Key.Item1, kvp.Key.Item3)] - kvp.Value);
                 AttributeOverlap.table.Add(kvp.Key, k);
             }
         }
@@ -131,7 +131,7 @@ namespace PreProcessor
         //1%
         private int CalcThreshold()
         {
-            float TotalQueries = (float) wp.SumFreqs();
+            double TotalQueries = (double) wp.SumFreqs();
             return (int) Math.Ceiling(TotalQueries * 0.01);
         }
 
@@ -146,31 +146,31 @@ namespace PreProcessor
             foreach (QFIDFNumTable k in numtables)
             {
                 var vals = dc.GetAllVals(k.Name);
-                float stv = CalcStdDev(vals, CalcMean(vals));
+                double stv = CalcStdDev(vals, CalcMean(vals));
                 Bandwidth.table.Add(k.Name, CalcH(stv, vals.Count));
             }
             Console.WriteLine("\tFinished calculating Bandwith!");
         }
 
-        private float CalcMean(List<float> vals)
+        private double CalcMean(List<double> vals)
         {
-            float s = 0;
-            foreach (float f in vals)
+            double s = 0;
+            foreach (double f in vals)
                 s += f;
-            return s / ((float)vals.Count);
+            return s / ((double)vals.Count);
         }
 
-        private float CalcStdDev(List<float> vals, float mean)
+        private double CalcStdDev(List<double> vals, double mean)
         {
-            float s = 0;
-            foreach (float f in vals)
-                s += (float) Math.Pow((f - mean), 2);
-            return (float) Math.Sqrt(s / ((float)vals.Count));
+            double s = 0;
+            foreach (double f in vals)
+                s += (double) Math.Pow((f - mean), 2);
+            return Math.Sqrt(s / ((double)vals.Count));
         }
 
-        private float CalcH(float stddev, int n)
+        private double CalcH(double stddev, int n)
         {
-            return (float) (1.06 * stddev * Math.Pow(n, -0.2));
+            return (1.06 * stddev * Math.Pow(n, -0.2));
         }
 
         private void CalcIDF()
@@ -193,18 +193,18 @@ namespace PreProcessor
                     int n = k.table.Count;
 
                     // bandwidth
-                    float h = Bandwidth.table[attr];
+                    double h = Bandwidth.table[attr];
                     foreach (KeyValuePair<string, Attribute> entry in k.table)
                     {
-                        float t_a = (float)Convert.ToDouble(entry.Key);
+                        double t_a = Convert.ToDouble(entry.Key);
                         Attribute a = entry.Value;
 
                         double s = 0;
-                        foreach (float t_b in dc.GetAllVals(k.Name))                        
+                        foreach (double t_b in dc.GetAllVals(k.Name))                        
                             s += Math.Pow(Math.E, (-0.5 * (((t_b - t_a) / h) * (t_b - t_a) / h)));
                         
                         // IDF score
-                        float IDF = (float)Math.Log(n / s);
+                        double IDF = Math.Log(n / s);
 
                         // Set IDF score
                         a.SetIDF(IDF);
@@ -230,7 +230,7 @@ namespace PreProcessor
                             if (entry.Key == t_b)
                                 f++;
                         
-                        float idf = (float)Math.Log(n / f);
+                        double idf = Math.Log(n / (double) f);
                         a.SetIDF(idf);
                     }
                 }
