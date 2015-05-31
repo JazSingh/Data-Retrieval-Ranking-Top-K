@@ -32,6 +32,8 @@ namespace PreProcessor
 
 
         public abstract void Flush(string file);
+
+        public abstract string GetName();
     }
 
     public class QFIDFCatTable : QFIDFTable
@@ -58,7 +60,7 @@ namespace PreProcessor
             File.AppendAllLines(file, statements);
         }
 
-        private string GetName()
+        public override string GetName()
         {
             switch (Name)
             {
@@ -94,7 +96,7 @@ namespace PreProcessor
             File.AppendAllLines(file, statements);
         }
 
-        private string GetName()
+        public override string GetName()
         {
             switch (Name)
             {

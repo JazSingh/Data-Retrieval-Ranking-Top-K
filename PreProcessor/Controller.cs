@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using System.Data.SQLite;
 
 namespace PreProcessor
 {
@@ -45,7 +46,11 @@ namespace PreProcessor
                 Cylinders, Displacement, Horsepower, Weight, Acceleration, ModelYear, Origin
             };
             Start();
+            Console.WriteLine("Flushing data to metadb and writing metaload.txt.....");
             Flush();
+            Console.WriteLine("Finished flushing data to metadb and writing metaload.txt!");
+            Console.WriteLine();
+            Console.WriteLine("Finished!! You can now safely close the program!");
         }
 
         private void Start()
@@ -265,6 +270,34 @@ namespace PreProcessor
                 t.Flush(file);
             Bandwidth.Flush(file);
             AttributeOverlap.Flush(file);
+            WriteToMetaDB();
+        }
+
+        private void WriteToMetaDB()
+        {
+            SQLiteConnection meta_dbConnection = new SQLiteConnection("Data Source=metadb.db;Version=3;");
+            meta_dbConnection.Open();
+
+            foreach (var k in QFIDFTables)
+            {
+                string sql = "DELETE FROM " + k.GetName() + ";";
+                SQLiteCommand c = new SQLiteCommand(sql, meta_dbConnection);
+                c.ExecuteNonQuery();
+            }
+
+            SQLiteCommand cc = new SQLiteCommand("DELETE FROM AttributeOverlap;", meta_dbConnection);
+            SQLiteCommand cd = new SQLiteCommand("DELETE FROM Bandwidth", meta_dbConnection);
+            cc.ExecuteNonQuery();
+            cd.ExecuteNonQuery();
+
+            int i = 1;
+            string[] inserts = File.ReadAllLines("metaload.txt");
+            while (i < inserts.Length && !string.IsNullOrEmpty(inserts[i]))
+            {
+                SQLiteCommand c = new SQLiteCommand(inserts[i], meta_dbConnection);
+                c.ExecuteNonQuery();
+                i++;
+            }
         }
     }
 }

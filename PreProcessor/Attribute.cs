@@ -20,13 +20,9 @@ namespace PreProcessor
 
         public void SetQF(int RQF, int RMaxQF)
         {
-            if (RMaxQF == 0) // er wordt nooit gezocht in de workload naar dit attribuut, QF moet laag zijn
-                QF = 1f/7500f;
-            else
-                QF = ((double)RQF + 1)
-                   / ((double)RMaxQF + 1);
-
-            SetImportance();
+            QF = ((double)RQF + 1) / ((double)RMaxQF + 1);
+            importance = Math.Log10(RQF + 1);
+            //SetImportance();
         }
 
         private void SetImportance()

@@ -10,8 +10,8 @@ namespace DataAnalyseP1
     class DatabaseController
     {
         SQLiteConnection m_dbConnection;
-        Dictionary<string, Dictionary<string, float[]>> metadb;
-        Dictionary<Tuple<string, string, string>, float> overlap;
+        Dictionary<string, Dictionary<string, double[]>> metadb;
+        Dictionary<Tuple<string, string, string>, double> overlap;
         List<string> numerical;
         List<string> categorical;
         List<string> all_attributes;
@@ -32,8 +32,8 @@ namespace DataAnalyseP1
             all_attributes = new List<string>() { "mpg", "cylinders", "displacement", "horsepower", "weight", "acceleration", "model_year", "origin", "brand", "model", "type" };
             
             // metadb
-            metadb = new Dictionary<string, Dictionary<string, float[]>>();
-            overlap = new Dictionary<Tuple<string, string, string>, float>();
+            metadb = new Dictionary<string, Dictionary<string, double[]>>();
+            overlap = new Dictionary<Tuple<string, string, string>, double>();
 
             // metadb variables
             string val = "attr";
@@ -43,19 +43,19 @@ namespace DataAnalyseP1
             // variables needed for loading the metadb
             SQLiteCommand command;
             SQLiteDataReader reader;
-            Dictionary<string, float[]> tabel;
+            Dictionary<string, double[]> tabel;
 
             // load categorical and numerical data
             foreach (string attr in all_attributes)
             {
                 command = new SQLiteCommand("SELECT " + val + ", " + qfidfval + ", " + imp + " FROM " + attr + ";", meta_dbConnection);
                 reader = command.ExecuteReader();
-                tabel = new Dictionary<string, float[]>();
+                tabel = new Dictionary<string, double[]>();
                 while (reader.Read())
                 {
-                    float[] info = new float[2];
-                    info[0] = (float)Convert.ToDouble(reader[qfidfval]);
-                    info[1] = (float)Convert.ToDouble(reader[imp]);
+                    double[] info = new double[2];
+                    info[0] = Convert.ToDouble(reader[qfidfval]);
+                    info[1] = Convert.ToDouble(reader[imp]);
                     tabel.Add(reader[val].ToString(), info);
                 }
                 metadb.Add(attr, tabel);
@@ -64,11 +64,11 @@ namespace DataAnalyseP1
             // load bandwidth
             command = new SQLiteCommand("SELECT " + val + ", bandwith FROM bandwidth;", meta_dbConnection);
             reader = command.ExecuteReader();
-            tabel = new Dictionary<string, float[]>();
+            tabel = new Dictionary<string, double[]>();
             while (reader.Read())
             {
-                float[] info = new float[1];
-                info[0] = (float)Convert.ToDouble(reader["bandwith"]);
+                double[] info = new double[1];
+                info[0] = Convert.ToDouble(reader["bandwith"]);
                 tabel.Add(reader[val].ToString(), info);
             }
             metadb.Add("bandwidth", tabel);
@@ -76,12 +76,12 @@ namespace DataAnalyseP1
             // load attribute-overlap
             command = new SQLiteCommand("SELECT col, attr1, attr2, similarity FROM attributeoverlap;", meta_dbConnection);
             reader = command.ExecuteReader();
-            tabel = new Dictionary<string, float[]>();
+            tabel = new Dictionary<string, double[]>();
             while (reader.Read())            
                 overlap.Add(new Tuple<string, string, string>(reader["col"].ToString(), 
                                                             reader["attr1"].ToString(), 
                                                             reader["attr2"].ToString()), 
-                                                            (float)Convert.ToDouble(reader["similarity"]));            
+                                                            Convert.ToDouble(reader["similarity"]));            
         }
 
         public string[] ExecuteQuery(Dictionary<string, List<string>> query, int k)
@@ -91,14 +91,14 @@ namespace DataAnalyseP1
             string[] ouput = new string[k];
 
             // create a list for each attr based on sim value
-            Dictionary<int, float>[] similarity_tables = new Dictionary<int, float>[query.Count];
+            Dictionary<int, double>[] similarity_tables = new Dictionary<int, double>[query.Count];
             int[][] indexes = new int[query.Count][];
             List<string> seenattributes = new List<string>();
             int i = 0;
             foreach (KeyValuePair<string, List<string>> attribute in query)
             {                
                 string attr = attribute.Key;
-                Dictionary<int, float> similarity_table = new Dictionary<int, float>();
+                Dictionary<int, double> similarity_table = new Dictionary<int, double>();
 
                 // numerical
                 if (numerical.Contains(attr))
@@ -109,12 +109,12 @@ namespace DataAnalyseP1
                     while (reader.Read())
                     {
                         int key = Convert.ToInt32(reader[0], System.Globalization.NumberFormatInfo.InvariantInfo);
-                        int b = Convert.ToInt32(reader[1]);
+                        double b = Convert.ToDouble(reader[1], System.Globalization.NumberFormatInfo.InvariantInfo);
 
-                        float s = 0;
+                        double s = 0;
                         foreach (string val in attribute.Value)
                         {
-                            int a = Convert.ToInt32(val, System.Globalization.NumberFormatInfo.InvariantInfo);
+                            double a = Convert.ToDouble(val, System.Globalization.NumberFormatInfo.InvariantInfo);
                             s = Math.Max(s, num_sim(attr, a, b));
                         }
 
@@ -134,7 +134,7 @@ namespace DataAnalyseP1
                         int key = Convert.ToInt32(reader[0], System.Globalization.NumberFormatInfo.InvariantInfo);
                         string b = (string)reader[1];
 
-                        float s = 0;
+                        double s = 0;
                         foreach (string a in attribute.Value)
                             s = Math.Max(s, cat_sim(attr, a, b));
 
@@ -147,11 +147,11 @@ namespace DataAnalyseP1
                 similarity_tables[i] = (similarity_table);
 
                 // dict -> sorted array (sorted access)
-                List<KeyValuePair<int, float>> sortedlist = similarity_table.ToList();
+                List<KeyValuePair<int, double>> sortedlist = similarity_table.ToList();
                 // sorts on values from low to high
                 sortedlist.Sort(
-                    delegate(KeyValuePair<int, float> firstPair,
-                    KeyValuePair<int, float> nextPair)
+                    delegate(KeyValuePair<int, double> firstPair,
+                    KeyValuePair<int, double> nextPair)
                     {
                         return firstPair.Value.CompareTo(nextPair.Value);
                     }
@@ -160,7 +160,7 @@ namespace DataAnalyseP1
                 // build array
                 indexes[i] = new int[similarity_table.Count];
                 int j = similarity_table.Count - 1;
-                foreach (KeyValuePair<int, float> entry in sortedlist)
+                foreach (KeyValuePair<int, double> entry in sortedlist)
                 {
                     indexes[i][j] = entry.Key;
                     j--;
@@ -181,11 +181,11 @@ namespace DataAnalyseP1
                     missingattributes.Add(elem);           
 
             // get the Top-K ID's
-            List<Tuple<int, float>> topk = TopKSelection(k, indexes, similarity_tables, missingattributes);
+            List<Tuple<int, double>> topk = TopKSelection(k, indexes, similarity_tables, missingattributes);
 
             // get the Top-K tuples
             i = 0;
-            foreach (Tuple<int,float> entry in topk)
+            foreach (Tuple<int,double> entry in topk)
             {
                 // get id
                 int id = entry.Item1;
@@ -205,7 +205,7 @@ namespace DataAnalyseP1
             return ouput;
         }
 
-        public List<Tuple<int, float>> TopKSelection(int k , int[][] indexes, Dictionary<int, float>[] sim_tabel, List<string> missing_attributes)
+        public List<Tuple<int, double>> TopKSelection(int k , int[][] indexes, Dictionary<int, double>[] sim_tabel, List<string> missing_attributes)
         {
             // --- Top-K selection using Fagin's Algorithm ---
             // m = number of attribute tables
@@ -221,7 +221,7 @@ namespace DataAnalyseP1
             Dictionary<int, int> seen = new Dictionary<int, int>();
             
             // tabel to keep the found similarity results
-            Dictionary<int, float[]> found = new Dictionary<int, float[]>();
+            Dictionary<int, double[]> found = new Dictionary<int, double[]>();
 
             // Fagin's alogrithm
             // for row
@@ -231,12 +231,12 @@ namespace DataAnalyseP1
                 {
                     // obtain key and value
                     int key = indexes[j][i];
-                    float value = sim_tabel[j][key];
+                    double value = sim_tabel[j][key];
 
                     // store key and value
-                    float[] vs;
+                    double[] vs;
                     if (!found.ContainsKey(key))
-                        vs = new float[m];
+                        vs = new double[m];
                     else
                         vs = found[key];                        
                     vs[j] = value;
@@ -255,14 +255,14 @@ namespace DataAnalyseP1
                 }            
             
             // calculate total similarity (retrieve value where necessary), and insert in topk list (ordered by scoring)
-            List<Tuple<int, float>> topk = new List<Tuple<int, float>>();
-            foreach (KeyValuePair<int, float[]> entry in found)
+            List<Tuple<int, double>> topk = new List<Tuple<int, double>>();
+            foreach (KeyValuePair<int, double[]> entry in found)
             {
                 // calculate total sim
-                float score = 0;
+                double score = 0;
                 for (int i = 0; i < m; i++)
                 {
-                    float x = entry.Value[i];
+                    double x = entry.Value[i];
                     if (x == 0.0f)
                         x = sim_tabel[i][entry.Key];
                     score += x;
@@ -275,15 +275,15 @@ namespace DataAnalyseP1
                     // if score x is higher than the score at index i, insert x
                     if (score > topk[i].Item2)
                     {
-                        topk.Insert(i, new Tuple<int, float>(entry.Key, score));
+                        topk.Insert(i, new Tuple<int, double>(entry.Key, score));
                         inserted = true;
                         break;
                     }
                     else if (score == topk[i].Item2)
                     {
                         // break tie, using the importance values to calculate the missing attribute scores
-                        float score_a = 0;
-                        float score_b = 0;
+                        double score_a = 0;
+                        double score_b = 0;
 
                         foreach (string attr in missing_attributes)
                         {
@@ -292,26 +292,18 @@ namespace DataAnalyseP1
                             SQLiteDataReader reader = command.ExecuteReader();
                             
                             reader.Read();
-                            string val_a;
-                            if (numerical.Contains(attr))
-                                val_a = Math.Round(Convert.ToDouble(reader[0]), 1).ToString();
-                            else
-                                val_a = reader[0].ToString();
+                            string val_a = reader[0].ToString();
                             score_a += metadb[attr][val_a][1];
 
                             reader.Read();
-                            string val_b;
-                            if (numerical.Contains(attr))
-                                val_b = Math.Round(Convert.ToDouble(reader[0]), 1).ToString();
-                            else
-                                val_b = reader[0].ToString();
+                            string val_b = reader[0].ToString();
                             score_b += metadb[attr][val_b][1];
                         }
 
                         // compare the total missing attribute scores
                         if (score_a > score_b)
                         {
-                            topk.Insert(i, new Tuple<int, float>(entry.Key, score));
+                            topk.Insert(i, new Tuple<int, double>(entry.Key, score));
                             inserted = true;
                             break;
                         }
@@ -319,7 +311,7 @@ namespace DataAnalyseP1
                 }
                 // if not inserted and the topk is incomplete then add x to the end of the topk list
                 if (topk.Count < k && !inserted)
-                    topk.Add(new Tuple<int, float>(entry.Key, score));
+                    topk.Add(new Tuple<int, double>(entry.Key, score));
 
                 // if there are to much elements in the topk list, remove the last (lowest score)
                 if (topk.Count > k)                
@@ -331,31 +323,33 @@ namespace DataAnalyseP1
         }        
 
         // Numerical Similarity
-        public float num_sim(string attr, int a, int b)
+        public double num_sim(string attr, double a, double b)
         {
             if (a == b)
             {
-                float res = metadb[attr][a.ToString()][0];
+                double res = metadb[attr][a.ToString()][0];
                 return metadb[attr][a.ToString()][0];
             }
             else
             {
-                float h = metadb["bandwidth"][attr][0];
+                double h = metadb["bandwidth"][attr][0];
                 //qfidf(b)
-                float b_weight = metadb[attr][b.ToString()][0];
-                float res = (float)Math.Pow(Math.E, -0.5 * Math.Pow(((a - b) / h), 2)) * b_weight;
-                return (float)Math.Pow(Math.E, -0.5 * Math.Pow(((a - b) / h), 2)) * b_weight;
+                double b_weight = metadb[attr][b.ToString()][0];
+                double res = Math.Pow(Math.E, -0.5 * Math.Pow(((a - b) / h), 2)) * b_weight;
+                return Math.Pow(Math.E, -0.5 * Math.Pow(((a - b) / h), 2)) * b_weight;
             }
         }
 
         // Categorical Similarity
-        public float cat_sim(string attr, string a, string b)
+        public double cat_sim(string attr, string a, string b)
         {
             if (a == b)
                 return metadb[attr][a][0];
             else
                 if (overlap.ContainsKey(new Tuple<string, string, string>(attr, a, b)))
                     return overlap[new Tuple<string, string, string>(attr, a, b)];
+                else if (overlap.ContainsKey(new Tuple<string, string, string>(attr, b, a)))
+                    return overlap[new Tuple<string, string, string>(attr, b, a)];
                 else
                     return 0;
         }
