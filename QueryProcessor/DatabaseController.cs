@@ -195,10 +195,10 @@ namespace DataAnalyseP1
                 SQLiteDataReader reader = command.ExecuteReader();
                 reader.Read();
                 ouput[i] = "ID: " + reader["id"] +
-                           "\tBrand: " + reader["brand"] +
-                           "\tType: " + reader["type"] +
-                           "\tModel: " + reader["model"];
-                    
+                           ", "   + reader["brand"] +
+                           ", "  +  reader["model"] +
+                           ", " + reader["type"] +
+                           ", jaar: "  + reader["model_year"];
                 i++;
             }
 
